@@ -1,0 +1,43 @@
+import requests
+from bs4 import BeautifulSoup
+
+
+def weather_spb2():
+    rec = requests.get('https://peterburg2.ru/pogoda/')
+    soup = BeautifulSoup(rec.content, 'html.parser')
+    tables = soup.find_all('td', {'class': 'temp'})
+    now = tables[0].__str__()
+    now_str = ''.join(now)
+    start = now_str.find('>')  # indices of characters '><' between which are celsius
+    the_end = now_str.find('<', 5)
+
+    print('Peterburg2 : ', now_str[start + 1:the_end].strip())
+
+
+def weather_com():
+    req = requests.get('https://weather.com/weather/today/l/59.87,30.39?par=google&temp=c')
+    soup = BeautifulSoup(req.content, 'html.parser')
+    tables = soup.find_all('span', {'class': 'CurrentConditions--tempValue--3KcTQ'})
+    now = tables[0].__str__()
+    now_str = ''.join(now)
+    start = now_str.find('>')  # indices of characters '><' between which are celsius
+    the_end = now_str.find('<', 5)
+
+    print('Weather.com : ', now_str[start + 1:the_end])
+
+
+def mail_weather():
+    req = requests.get('https://pogoda.mail.ru/prognoz/sankt_peterburg/')
+    soup = BeautifulSoup(req.content, 'html.parser')
+    tables = soup.find_all('div', {'class': 'information__content__temperature'})
+    now = tables[0].__str__()
+    now_str = ''.join(now)
+    start = now_str.find('n>', 6)  # indices of characters 'n>' and '°' between which are celsius
+    the_end = now_str.find('°')
+
+    print('Mail.ru : ', now_str[start + 2:the_end + 1])
+
+
+weather_com()
+weather_spb2()
+mail_weather()
